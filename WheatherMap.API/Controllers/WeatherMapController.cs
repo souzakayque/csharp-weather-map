@@ -73,13 +73,22 @@ namespace WeatherMap.API.Controllers
         [ProducesResponseType(typeof(GetWeathersMapQueryResult), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetPeriodically()
+        public async Task<IActionResult> GetPeriodically([FromHeader(Name = "Authorization")]string authorization)
         {
             try
             {
                 WeatherMapPeriodicallyCommand command = new WeatherMapPeriodicallyCommand();
-                               
+
+                if (!string.IsNullOrWhiteSpace(authorization))
+                {
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(authorization.Split(' ')[1]);
+                    command.Token = token.Claims.FirstOrDefault().Value;
+                }
+                else
+                {
+                    return await Response(401, new RequestResult(null, ((Notifiable)_commandHandler).Notifications));
+                }
+
                 command.SetDate(DateTime.Now);
 
                 var result = _commandHandler.Handle(command, null);
