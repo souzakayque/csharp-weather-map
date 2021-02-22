@@ -39,7 +39,7 @@ namespace WeatherMap.Domain.WeatherMap.Command.Handlers
                     return null;
                 }
 
-                if (command.FinalDate > DateTime.Today || command.FinalDate < DateTime.Today.AddDays(-5) || command.InitialDate > DateTime.Today || command.InitialDate < DateTime.Today.AddDays(-5))
+                if (command.FinalDate > DateTime.Today || command.InitialDate > DateTime.Today)
                 {
                     AddNotification("Date", "Initial and final date must be into a range of today and five days ago.");
                     return null;
